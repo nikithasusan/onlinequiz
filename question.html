@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Question</title>
+</head>
+<body>
+    <div id="questionContainer"></div>
+    <script>
+        let currentQuestionIndex = 0;
+        let totalQuestions = 0;
+
+
+        document.addEventListener('DOMContentLoaded', function() {
+            loadQuestion();
+        });
+
+        function loadQuestion() {
+            fetch('question.php', {
+                method: 'GET'
+            }).then(response => response.json()).then(data => {
+                if(data.status === 'success') {
+                    if (currentQuestionIndex === 0) {
+                        totalQuestions = data.totalQuestions; 
+                    }
+                    displayQuestion(data.question, data.answers);
+                } else {
+                    alert(data.message);
+                }
+            }).catch(error => {
+                console.error('Error fetching question:', error);
+            });
+        }
+
+        function displayQuestion(question, answers) {
+            let container = document.getElementById('questionContainer');
+            container.innerHTML = `<h1>${question.question_text}</h1>`;
+            let form = document.createElement('form');
+            form.id = 'answerForm';
+
+            answers.forEach(answer => {
+                let label = document.createElement('label');
+                let radio = document.createElement('input');
+                radio.type = 'radio';
+                radio.name = 'answer';
+                radio.value = answer.id;
+                label.appendChild(radio);
+                label.appendChild(document.createTextNode(answer.answer_text));
+                form.appendChild(label);
+                form.appendChild(document.createElement('br'));
+            });
+
+            let button = document.createElement('button');
+            button.type = 'submit';
+            button.innerText = 'Submit';
+            form.appendChild(button);
+            container.appendChild(form);
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                let formData = new FormData(this);
+                fetch('answer.php', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => response.json()).then(data => {
+                    if(data.status === 'success') {
+                        currentQuestionIndex++;
+                        if (currentQuestionIndex >= totalQuestions) {
+                            window.location.href = 'review.html'; 
+                        } else {
+                            loadQuestion(); // Load the next question
+                        }
+                    } else {
+                        alert(data.message);
+                    }
+                }).catch(error => {
+                    console.error('Error submitting answer:', error);
+                });
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Quiz Registration</title>
+</head>
+<body>
+    <h1>Enter your Name to Start the Quiz</h1>
+    <form id="registerForm" method="POST">
+        <input type="text" name="name" required>
+        <button type="submit">Start Quiz</button>
+    </form>
+    <script>
+	
+        document.getElementById('registerForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            fetch('register.php', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json()).then(data => {
+                if(data.status == 'success') {
+                    window.location.href = 'question.html';
+                } else {
+                    alert(data.message);
+                }
+            });
+        });
+    </script>
+</body>
+</html>

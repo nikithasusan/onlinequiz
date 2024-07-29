@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Review Answers</title>
+</head>
+<body>
+    <h1>Review Your Answers</h1>
+    <div id="reviewContainer"></div>
+    <button onclick="confirmAnswers()">Confirm Answers</button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadReview();
+        });
+
+        function loadReview() {
+            fetch('review.php', {
+                method: 'GET'
+            }).then(response => response.json()).then(data => {
+                if(data.status == 'success') {
+                    displayReview(data.questions);
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+
+        function displayReview(questions) {
+            let container = document.getElementById('reviewContainer');
+            container.innerHTML = '';
+            questions.forEach(question => {
+                container.innerHTML += `<h2>${question.question_text}</h2>`;
+                question.answers.forEach(answer => {
+                    let checked = answer.selected ? 'checked' : '';
+                    container.innerHTML += `<input type="radio" name="q${question.id}" value="${answer.id}" ${checked}> ${answer.answer_text}<br>`;
+                });
+            });
+        }
+
+        function confirmAnswers() {
+            let answers = {};
+            document.querySelectorAll('input[type=radio]:checked').forEach(input => {
+                answers[input.name] = input.value;
+            });
+            fetch('confirm.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(answers)
+            }).then(response => response.json()).then(data => {
+                if(data.status == 'success') {
+                    window.location.href = 'result.html';
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+		
+    </script>
+</body>
+</html>
+
