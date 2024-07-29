@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Result</title>
+</head>
+<body>
+    <h1>Your Quiz Results</h1>
+    <div id="resultContainer"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadResults();
+        });
+
+        function loadResults() {
+            fetch('result.php', {
+                method: 'GET'
+            }).then(response => response.json()).then(data => {
+                if(data.status === 'success') {
+                    displayResults(data.questions, data.passed, data.failed);
+                } else {
+                    alert(data.message);
+                }
+            });
+        }
+
+        function displayResults(questions, passed, failed) {
+            let container = document.getElementById('resultContainer');
+            container.innerHTML = '';
+            questions.forEach(question => {
+                container.innerHTML += `<h2>${question.question_text}</h2>`;
+                // Create a set to keep track of displayed answers
+                let displayedAnswers = new Set();
+                question.answers.forEach(answer => {
+                    if (!displayedAnswers.has(answer.answer_text)) {
+                        let style = answer.selected ? 'font-weight: bold;' : '';
+                        let mark = answer.correct ? '✔️' : '';
+                        container.innerHTML += `<div style="${style}">${answer.answer_text} ${mark}</div>`;
+                        // Add the answer to the set to avoid duplication
+                        displayedAnswers.add(answer.answer_text);
+                    }
+                });
+            });
+            container.innerHTML += `<h3>Total Questions: ${questions.length}</h3>`;
+            container.innerHTML += `<h3>Passed: ${passed}</h3>`;
+            container.innerHTML += `<h3>Failed: ${failed}</h3>`;
+        }
+    </script>
+</body>
+</html>
