@@ -41,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
             'selected' => $row['answer_id'] == $row['selected_answer']
         ];
     }
+	
     if ($current_question != null) {
         $questions[] = $current_question;
     }
