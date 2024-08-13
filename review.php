@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $questions = [];
     $current_question = null;
 	
+	
 
     while ($row = $result->fetch_assoc()) {
         if ($current_question == null || $current_question['id'] != $row['id']) {
