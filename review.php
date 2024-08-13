@@ -42,6 +42,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         ];
     }
 	
+	
+	
     if ($current_question != null) {
         $questions[] = $current_question;
     }
